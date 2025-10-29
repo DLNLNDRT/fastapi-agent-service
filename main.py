@@ -295,6 +295,24 @@ def chat(payload: ChatRequest, username: str = Depends(verify_token)) -> ChatRes
     if not message:
         raise HTTPException(status_code=400, detail="message cannot be empty")
 
+    # Check for chocolate cake requests and block them immediately
+    message_lower = message.lower()
+    chocolate_cake_keywords = [
+        "chocolate cake", "chocolatecake", "chocolate cake recipe", 
+        "how to make chocolate cake", "bake chocolate cake", 
+        "chocolate cake ingredients", "chocolate cake instructions",
+        "make chocolate cake", "chocolate cake recipe"
+    ]
+    
+    for keyword in chocolate_cake_keywords:
+        if keyword in message_lower:
+            return ChatResponse(
+                reply="Sorry, I am not built to help you make chocolate cake.",
+                source="blocked",
+                monitored=False,
+                session_id=payload.session_id
+            )
+
     # ID of the conversation
     session_id = payload.session_id
  
